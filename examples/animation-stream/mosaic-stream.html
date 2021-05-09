@@ -21,8 +21,8 @@
 	</head>
 	<body>
 		<div id="root"></div>
-		<script src="../../mithril.js"></script>
-		<script src="../../stream/stream.js"></script>
+		<script src="../../mythical.js"></script>
+		<script src="../../src/stream.js"></script>
 		<script>
 var root = document.getElementById("root")
 
@@ -39,15 +39,15 @@ const exit = vnode => {
 	})
 }
 
-const backgroundPosition = step => i => 
+const backgroundPosition = step => i =>
 	// X
-	(i % step * (step+1)) + "% " 
+	(i % step * (step+1)) + "% "
 	// Y
 	+ (Math.floor(i / step) * (step+1)) + "%"
 
 // actions -> state -> vnode
-const view = exit => cells => 
-	m(".container", cells.map(i => 
+const view = exit => cells =>
+	m(".container", cells.map(i =>
 	 	m(".slice", {
 			style: {backgroundPosition: backgroundPosition(10)(i)},
 			onbeforeremove: exit

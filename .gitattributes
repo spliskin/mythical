@@ -1,6 +1,8 @@
 * text=auto
-/mithril.js binary
-/mithril.min.js binary
+/mythical.js binary
+/mythical.min.js binary
+/mythical.js.map binary
+/mythical.min.js.map binary
 /package-lock.json binary
 /yarn.lock binary
 
