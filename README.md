@@ -1,28 +1,18 @@
-mithril.js [![npm Version](https://img.shields.io/npm/v/mithril.svg)](https://www.npmjs.com/package/mithril) [![npm License](https://img.shields.io/npm/l/mithril.svg)](https://www.npmjs.com/package/mithril) [![npm Downloads](https://img.shields.io/npm/dm/mithril.svg)](https://www.npmjs.com/package/mithril) [![Donate at OpenCollective](https://img.shields.io/opencollective/all/mithriljs.svg?colorB=brightgreen)](https://opencollective.com/mithriljs)
+mythical.js
 ==========
-
-<p align="center">
-	<a href="https://travis-ci.org/MithrilJS/mithril.js">
-		<img src="https://img.shields.io/travis/MithrilJS/mithril.js/next.svg" alt="Build Status">
-	</a>
-	<a href="https://gitter.im/mithriljs/mithril.js">
-		<img src="https://img.shields.io/gitter/room/mithriljs/mithril.js.svg" alt="Gitter" />
-	</a>
-</p>
-
-- [What is Mithril?](#what-is-mithril)
+- [What is Mythical?](#what-is-mythical)
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Getting Help](#getting-help)
 - [Contributing](#contributing)
 
-## What is Mithril?
+## What is Mythical?
 
-A modern client-side JavaScript framework for building Single Page Applications. It's small (<!-- size -->9.79 KB<!-- /size --> gzipped), fast and provides routing and XHR utilities out of the box.
+It's a tooling refactor of Mithril.js to shed extra dependencies to make development / refactoring cleaner.
 
-Mithril is used by companies like Vimeo and Nike, and open source platforms like Lichess 👍.
+A modern client-side JavaScript framework for building Single Page Applications. It's small (<!-- size -->10.12 KB<!-- /size --> gzipped), fast and provides routing and XHR utilities out of the box.
 
-Mithril supports IE11, Firefox ESR, and the last two versions of Firefox, Edge, Safari, and Chrome. No polyfills required. 👌
+Mythical supports IE11, Firefox ESR, and the last two versions of Firefox, Edge, Safari, and Chrome. No polyfills required. 👌
 
 ## Installation
 
@@ -30,44 +20,26 @@ Mithril supports IE11, Firefox ESR, and the last two versions of Firefox, Edge, 
 
 ```html
 <!-- Development: whichever you prefer -->
-<script src="https://unpkg.com/mithril/mithril.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mithril/mithril.js"></script>
+<script src="https://unpkg.com/mythical/mythical.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mythical/mythical.js"></script>
 
 <!-- Production: whichever you prefer -->
-<script src="https://unpkg.com/mithril/mithril.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mithril/mithril.min.js"></script>
+<script src="https://unpkg.com/mythical/mythical.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mythical/mythical.min.js"></script>
 ```
 
 ### npm
 
 ```bash
-npm install mithril --save
+npm install mythical --save
 ```
 
-The ["Getting started" guide](https://mithril.js.org/#getting-started) is a good place to start learning how to use mithril.
+The ["Getting started" guide](https://github.com/spliskin/mythical/wiki#getting-started) is a good place to start learning how to use mythical.
 
-TypeScript type definitions are available from DefinitelyTyped. They can be installed with:
-
-```bash
-$ npm install @types/mithril --save-dev
-```
 
 ## Documentation
 
-Documentation lives on [mithril.js.org](https://mithril.js.org).
+Documentation lives on [github.com](https://github.com/spliskin/mythical/wiki).
 
-You may be interested in the [API Docs](https://mithril.js.org/api.html), a [Simple Application](https://mithril.js.org/simple-application.html), or perhaps some [Examples](https://mithril.js.org/examples.html).
+You may be interested in the [API Docs](https://github.com/spliskin/mythical/wiki#api), a [Simple Application](https://mythical.js.org/simple-application.html), or perhaps some [Examples](https://mythical.js.org/examples.html).
 
-## Getting Help
-
-Mithril has an active & welcoming community on [Gitter](https://gitter.im/mithriljs/mithril.js), or feel free to ask questions on [Stack Overflow](https://stackoverflow.com/questions/tagged/mithril.js) using the `mithril.js` tag.
-
-## Contributing
-
-There's a [Contributing FAQ](https://mithril.js.org/contributing.html) on the mithril site that hopefully helps, but if not definitely hop into the [Gitter Room](https://gitter.im/mithriljs/mithril.js) and ask away!
-
----
-
-Thanks for reading!
-
-🎁

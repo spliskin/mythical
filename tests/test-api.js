@@ -12,7 +12,7 @@ o.spec("api", function() {
 		global.window = mock
 		global.requestAnimationFrame = mock.requestAnimationFrame
 	}
-	var m = require("..") // eslint-disable-line global-require
+	var m = require("../src") // eslint-disable-line global-require
 
 	o.afterEach(function() {
 		if (root) m.mount(root, null)
@@ -60,11 +60,6 @@ o.spec("api", function() {
 	o.spec("m.request", function() {
 		o("works", function() {
 			o(typeof m.request).equals("function") // TODO improve
-		})
-	})
-	o.spec("m.jsonp", function() {
-		o("works", function() {
-			o(typeof m.jsonp).equals("function") // TODO improve
 		})
 	})
 	o.spec("m.render", function() {
@@ -130,7 +125,7 @@ o.spec("api", function() {
 					}, FRAME_BUDGET)
 				})
 				o("m.route.set", function(done, timeout) {
-					timeout(100)
+					o.timeout(100)
 					root = window.document.createElement("div")
 					m.route(root, "/a", {
 						"/:id": createComponent({view: function() {return m("div")}})

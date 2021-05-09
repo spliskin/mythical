@@ -1,8 +1,8 @@
 "use strict"
 
-var callAsync = require("../test-utils/callAsync")
-var parseURL = require("../test-utils/parseURL")
-var parseQueryString = require("../querystring/parse")
+var callAsync = require("./callAsync")
+var parseURL = require("./parseURL")
+var parseQueryString = require("../src/querystring/parse")
 
 module.exports = function() {
 	var routes = {}
@@ -56,7 +56,7 @@ module.exports = function() {
 			}})
 			this.send = function(body) {
 				var self = this
-				
+
 				var completeResponse = function (data) {
 					self._responseCompleted = true
 					if(!aborted) {
