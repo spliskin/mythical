@@ -12,7 +12,7 @@ o.spec("api", function() {
 		global.window = mock
 		global.requestAnimationFrame = mock.requestAnimationFrame
 	}
-	var m = require("../src") // eslint-disable-line global-require
+	var m = require("../alt/alt.js") // eslint-disable-line global-require
 
 	o.afterEach(function() {
 		if (root) m.mount(root, null)
