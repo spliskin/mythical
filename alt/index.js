@@ -3,11 +3,11 @@
 #define ENFORCE_STRICT
 'use strict';
 #endif
-#include "hyperscript.js"
+#include "render/hyperscript.js"
 #include "request.js"
-#include "mount-redraw.js"
-#include "render.js"
-#include "route.js"
+#include "render/render.js"
+#include "api/mount-redraw.js"
+#include "api/router.js"
 #include "querystring/parse.js"
 #include "querystring/build.js"
 #include "pathname/parse.js"
@@ -15,6 +15,15 @@
 #include "render/vnode.js"
 #include "util/censor.js"
 
+#define defnull(o) typeof o !== "undefined" ? o : null
+var _window = defnull(window)
+
+var render = _render(_window)
+var mountRedraw = _mountRedraw(render, defnull(requestAnimationFrame), defnull(console));
+var request = _request(_window, Promise, mountRedraw.redraw)
+var route = _router(_window, mountRedraw);
+
+#undef defnull
 
 var m = function() { return hyperscript.apply(this, arguments) }
 m.m = hyperscript

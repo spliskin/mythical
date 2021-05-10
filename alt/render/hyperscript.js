@@ -3,6 +3,7 @@
 #include "hyperscriptVnode.js"
 #include "util/common.js"
 
+
 var selectorParser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["'\]]|.)*?)\5)?\])/g
 var selectorCache = {}
 
@@ -94,5 +95,18 @@ function hyperscript(selector) {
 	}
 
 	vnode.tag = selector
+	return vnode
+}
+
+hyperscript.trust = function trust(html) {
+    if (html === undefined || html == null) html = "";
+	return Vnode("<", undefined, undefined, html, undefined, undefined)
+}
+
+hyperscript.fragment = function fragment() {
+	var vnode = hyperscriptVnode.apply(0, arguments)
+
+	vnode.tag = "["
+	vnode.children = Vnode.normalizeChildren(vnode.children)
 	return vnode
 }
