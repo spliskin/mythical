@@ -7,7 +7,7 @@ var selectorParser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["
 var selectorCache = {}
 
 function isEmpty(object) {
-	for (var key in object) if (hasOwn.call(object, key)) return false
+	for (var key in object) if (hasOwn(object, key)) return false
 	return true
 }
 
@@ -32,7 +32,7 @@ function compileSelector(selector) {
 function execSelector(state, vnode) {
 	var attrs = vnode.attrs
 	var children = Vnode.normalizeChildren(vnode.children)
-	var hasClass = hasOwn.call(attrs, "class")
+	var hasClass = hasOwn(attrs, "class")
 	var className = hasClass ? attrs.class : attrs.className
 
 	vnode.tag = state.tag
@@ -43,14 +43,14 @@ function execSelector(state, vnode) {
 		var newAttrs = {}
 
 		for (var key in attrs) {
-			if (hasOwn.call(attrs, key)) newAttrs[key] = attrs[key]
+			if (hasOwn(attrs, key)) newAttrs[key] = attrs[key]
 		}
 
 		attrs = newAttrs
 	}
 
 	for (var key in state.attrs) {
-		if (hasOwn.call(state.attrs, key) && key !== "className" && !hasOwn.call(attrs, key)){
+		if (hasOwn(state.attrs, key) && key !== "className" && !hasOwn(attrs, key)){
 			attrs[key] = state.attrs[key]
 		}
 	}
@@ -66,7 +66,7 @@ function execSelector(state, vnode) {
 	if (hasClass) attrs.class = null
 
 	for (var key in attrs) {
-		if (hasOwn.call(attrs, key) && key !== "key") {
+		if (hasOwn(attrs, key) && key !== "key") {
 			vnode.attrs = attrs
 			break
 		}

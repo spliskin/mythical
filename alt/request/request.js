@@ -66,7 +66,7 @@ function _request($window, Promise, oncompletion) {
 
 	function hasHeader(args, name) {
 		for (var key in args.headers) {
-			if (hasOwn.call(args.headers, key) && name.test(key)) return true
+			if (hasOwn(args.headers, key) && name.test(key)) return true
 		}
 		return false
 	}
@@ -100,7 +100,7 @@ function _request($window, Promise, oncompletion) {
 			xhr.responseType = responseType
 
 			for (var key in args.headers) {
-				if (hasOwn.call(args.headers, key)) {
+				if (hasOwn(args.headers, key)) {
 					xhr.setRequestHeader(key, args.headers[key])
 				}
 			}

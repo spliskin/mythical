@@ -31,13 +31,13 @@ function censor(attrs, extras) {
 
 	if (extras != null) {
 		for (var key in attrs) {
-			if (hasOwn.call(attrs, key) && !magic.test(key) && extras.indexOf(key) < 0) {
+			if (hasOwn(attrs, key) && !magic.test(key) && extras.indexOf(key) < 0) {
 				result[key] = attrs[key]
 			}
 		}
 	} else {
 		for (var key in attrs) {
-			if (hasOwn.call(attrs, key) && !magic.test(key)) {
+			if (hasOwn(attrs, key) && !magic.test(key)) {
 				result[key] = attrs[key]
 			}
 		}

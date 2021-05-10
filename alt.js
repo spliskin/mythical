@@ -58,7 +58,7 @@ var selectorParser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["
 var selectorCache = {}
 
 function isEmpty(object) {
-	for (var key in object) if (Object.prototype.hasOwnProperty.call(object, key)) return false
+	for (var key in object) if (Object.hasOwnProperty.call(object,key)) return false
 	return true
 }
 
@@ -83,7 +83,7 @@ function compileSelector(selector) {
 function execSelector(state, vnode) {
 	var attrs = vnode.attrs
 	var children = Vnode.normalizeChildren(vnode.children)
-	var hasClass = Object.prototype.hasOwnProperty.call(attrs, "class")
+	var hasClass = Object.hasOwnProperty.call(attrs,"class")
 	var className = hasClass ? attrs.class : attrs.className
 
 	vnode.tag = state.tag
@@ -94,14 +94,14 @@ function execSelector(state, vnode) {
 		var newAttrs = {}
 
 		for (var key in attrs) {
-			if (Object.prototype.hasOwnProperty.call(attrs, key)) newAttrs[key] = attrs[key]
+			if (Object.hasOwnProperty.call(attrs,key)) newAttrs[key] = attrs[key]
 		}
 
 		attrs = newAttrs
 	}
 
 	for (var key in state.attrs) {
-		if (Object.prototype.hasOwnProperty.call(state.attrs, key) && key !== "className" && !Object.prototype.hasOwnProperty.call(attrs, key)){
+		if (Object.hasOwnProperty.call(state.attrs,key) && key !== "className" && !Object.hasOwnProperty.call(attrs,key)){
 			attrs[key] = state.attrs[key]
 		}
 	}
@@ -117,7 +117,7 @@ function execSelector(state, vnode) {
 	if (hasClass) attrs.class = null
 
 	for (var key in attrs) {
-		if (Object.prototype.hasOwnProperty.call(attrs, key) && key !== "key") {
+		if (Object.hasOwnProperty.call(attrs,key) && key !== "key") {
 			vnode.attrs = attrs
 			break
 		}
@@ -1158,7 +1158,7 @@ function _request($window, Promise, oncompletion) {
 
 	function hasHeader(args, name) {
 		for (var key in args.headers) {
-			if (Object.prototype.hasOwnProperty.call(args.headers, key) && name.test(key)) return true
+			if (Object.hasOwnProperty.call(args.headers,key) && name.test(key)) return true
 		}
 		return false
 	}
@@ -1192,7 +1192,7 @@ function _request($window, Promise, oncompletion) {
 			xhr.responseType = responseType
 
 			for (var key in args.headers) {
-				if (Object.prototype.hasOwnProperty.call(args.headers, key)) {
+				if (Object.hasOwnProperty.call(args.headers,key)) {
 					xhr.setRequestHeader(key, args.headers[key])
 				}
 			}
@@ -1375,13 +1375,13 @@ function censor(attrs, extras) {
 
 	if (extras != null) {
 		for (var key in attrs) {
-			if (Object.prototype.hasOwnProperty.call(attrs, key) && !magic.test(key) && extras.indexOf(key) < 0) {
+			if (Object.hasOwnProperty.call(attrs,key) && !magic.test(key) && extras.indexOf(key) < 0) {
 				result[key] = attrs[key]
 			}
 		}
 	} else {
 		for (var key in attrs) {
-			if (Object.prototype.hasOwnProperty.call(attrs, key) && !magic.test(key)) {
+			if (Object.hasOwnProperty.call(attrs,key) && !magic.test(key)) {
 				result[key] = attrs[key]
 			}
 		}
@@ -1390,9 +1390,8 @@ function censor(attrs, extras) {
 	return result
 }
 
-var sentinel = {}
-
 var _router = (function() {
+var sentinel = {}
 var m = hyperscript
 
 return function($window, mountRedraw) {

@@ -1,4 +1,4 @@
 #pragma once
 
 #define assign Object.assign
-#define hasOwn Object.prototype.hasOwnProperty
+#define hasOwn(obj,key) Object.hasOwnProperty.call(obj,key)
