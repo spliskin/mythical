@@ -2,7 +2,7 @@
 (function() {
 
 function Vnode(tag, key, attrs, children, text, dom) {
-	return { tag: tag, key: key, attrs: attrs, children: children, text: text, dom: dom, domSize: void(0), state: void(0), events: void(0), instance: void(0) }
+	return { tag, key, attrs, children, text, dom, domSize: void(0), state: void(0), events: void(0), instance: void(0) }
 }
 
 Vnode.normalize = function(node) {

@@ -1,7 +1,7 @@
 #pragma once
 
 function Vnode(tag, key, attrs, children, text, dom) {
-	return { tag: tag, key: key, attrs: attrs, children: children, text: text, dom: dom, domSize: undefined, state: undefined, events: undefined, instance: undefined }
+	return { tag, key, attrs, children, text, dom, domSize: undefined, state: undefined, events: undefined, instance: undefined }
 }
 
 Vnode.normalize = function(node) {
