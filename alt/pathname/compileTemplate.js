@@ -6,7 +6,7 @@
 // parsed values. This expects the input of the compiled template to be the
 // output of `parsePathname`. Note that it does *not* remove query parameters
 // specified in the template.
-function compileTemplate(template) {
+export function compileTemplate(template) {
 	var templateData = parsePathname(template)
 	var templateKeys = Object.keys(templateData.params)
 	var keys = []

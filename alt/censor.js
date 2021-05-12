@@ -26,7 +26,7 @@
 
 var magic = /^(?:key|oninit|oncreate|onbeforeupdate|onupdate|onbeforeremove|onremove)$/
 
-function censor(attrs, extras) {
+export function censor(attrs, extras) {
 	var result = {}
 
 	if (extras != null) {

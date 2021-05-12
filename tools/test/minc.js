@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const test = require(path.resolve('./tools/test/minctest.js'));
-test.setfinalization();
 
 function matches(text, pattern) {
     var i, rest = null;
@@ -69,7 +68,6 @@ function resolvePathPattern(str) {
     };
 }
 
-//var cwd = process.cwd();
 for (var i = 2, len = process.argv.length; i < len; i++) {
     var info = resolvePathPattern(process.argv[i]);
     var list = scanPath(info.path, info.pattern);

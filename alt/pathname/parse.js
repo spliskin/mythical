@@ -2,7 +2,7 @@
 #include "querystring/parse.js"
 
 // Returns `{path, params}` from `url`
-function parsePathname(url) {
+export function parsePathname(url) {
 	var queryIndex = url.indexOf("?")
 	var hashIndex = url.indexOf("#")
 	var queryEnd = hashIndex < 0 ? url.length : hashIndex

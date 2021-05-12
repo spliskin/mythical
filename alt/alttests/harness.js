@@ -8,7 +8,7 @@ let SOURCE = null;
 let TARGET = null;
 let cache = {};
 
-function setupgen() {
+function setupgen(title='') {
     test.group('generation', () => {
         test.run('source exists', () => {
             test.ok(fileexists(SOURCE));
@@ -25,6 +25,7 @@ function setupgen() {
 
         test.run('output exists', () => test.ok(fileexists(TARGET)));
     });
+    test.title(title);
 }
 
 function prepare(sourcePath) {
@@ -46,19 +47,16 @@ function precache(list) {
 
         SOURCE = prep.source;
         TARGET = prep.target;
-        test.title(prep.title);
-        test.titlePad(64);
 
-        setupgen();
+        setupgen(prep.title);
     }
+    return test.finalize();
 }
 
 function getcached(file) {
     if (!file in cache) return false;
     const prep = cache[file];
-    test.title(prep.title);
-    test.titlePad(64);
-    return { test, TARGET: prep.target};
+    return { test, TARGET: prep.target, title: prep.title };
 }
 
 function getcachedTarget(file) {
@@ -66,18 +64,12 @@ function getcachedTarget(file) {
     return cache[file].target;
 }
 
-function harness(sourcePath, title=false, titlepad=64) {
+function harness(sourcePath, title='', titlepad=64) {
     SOURCE = resolve(sourcePath);
     var frag = SOURCE.replace(BASEPATH, '');
     TARGET = path.join(BUILDPATH, path.dirname(frag), basename(frag) + ".out.js");
 
-    if (title)
-        test.title(title);
-
-    if (titlepad)
-        test.titlePad(64);
-
-    setupgen();
+    setupgen(title);
 
     return {
         test,
@@ -86,15 +78,11 @@ function harness(sourcePath, title=false, titlepad=64) {
     };
 }
 
-function nogen(sourcePath, title=false, titlepad=64) {
+function nogen(sourcePath, title='', titlepad=64) {
     SOURCE = resolve(sourcePath);
     TARGET = SOURCE;
 
-    if (title)
-        test.title(title);
-
-    if (titlepad)
-        test.titlePad(64);
+    test.title(title);
 
     return {
         harness,

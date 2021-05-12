@@ -2,7 +2,7 @@
 #include "pathname/build.js"
 #include "util.js"
 
-function _request($window, Promise, oncompletion) {
+export function _request($window, Promise, oncompletion) {
 	var callbackCount = 0
 
 	function PromiseProxy(executor) {

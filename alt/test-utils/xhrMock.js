@@ -2,7 +2,7 @@
 
 var callAsync = require("./callAsync")
 var parseURL = require("./parseURL")
-var parseQueryString = require("../src/querystring/parse")
+var parseQueryString = require("../../tmp/querystring/parse.out.js")
 
 module.exports = function() {
 	var routes = {}

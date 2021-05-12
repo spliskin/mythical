@@ -1,9 +1,5 @@
-// Originally based on
-// MINCTEST - Minimal Test Library
-// This is based on minctest.h (https://codeplea.com/minctest)
-//
+// This was originall based on minctest.h (https://codeplea.com/minctest)
 // Copyright (c) 2014-2017 Lewis Van Winkle
-//
 // http://CodePlea.com
 //
 // This software is provided 'as-is', without any express or implied
@@ -22,40 +18,7 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-
-// MINCTEST - Minimal testing library for Node.js
-//
-//
-// Example:
-//
-// var l = require("./minctest");
-//
-// l.run("test1", function(){
-//   l.ok('a' == 'a');          //assert true
-// });
-//
-// l.run("test2", function(){
-//   l.equal(5, 6);             //compare integers
-//   l.fequal(5.5, 5.6);        //compare floats
-// });
-//
-// return l.results();           //show results
-//
-
-var LTEST_FLOAT_TOLERANCE = 0.001;
-var ltests = 0;
-var lfails = 0;
-
-var ltitlePadding = 16;
-var ltabsize = 4;
-var tablevel = 0;
-var lfailures = [];
-var lmultiple=false;
-var lfinal = false;
-var lrun = false;
-var lpreruncb = false;
-
-function format(str, arr) {
+function sprintf(str, arr) {
     var i = -1;
     function callback(exp, p0, p1, p2, p3, p4) {
         if (exp == '%%') return '%';
@@ -82,179 +45,216 @@ function format(str, arr) {
     return str.replace(regex, callback);
 }
 
-const stdlog = (typeof window !== 'undefined' && typeof console !== 'undefined' && console.log) ? console.log : process.stdout.write.bind(process.stdout);
-const sprintf = (fmt, ...args) => format(fmt, arg);
-const printf = (fmt, ...args) => stdlog(format(fmt, args));
+const log = (typeof window !== 'undefined' && typeof console !== 'undefined' && console.log) ? console.log : process.stdout.write.bind(process.stdout);
+const printf = (fmt, ...args) => log(sprintf(fmt, args));
+
+const TABSIZE = 4;
+const _colors = {
+    reset: "\x1b[0m",
+    fgYellow: "\x1b[33m",
+    fgGreen: "\x1b[32m",
+    fgRed: "\x1b[31m",
+};
+const colorize = (str, color=_colors.fgYellow) => `${color}${str}${_colors.reset}`;
+const Color = {
+    Yellow: (str) => colorize(str, _colors['fgYellow']),
+    Green: (str) => colorize(str, _colors['fgGreen']),
+    Red: (str) => colorize(str, _colors['fgRed']),
+};
+const makeTab = (tlevel = 0) => ' '.repeat(TABSIZE * tlevel);
+const ellide = (str, length=30) => `...${str.substr(str.length-(length-3))}`;
 const serialize = (a) => JSON.stringify(a);
-const makeTab = (tlevel = 0) => " ".repeat(ltabsize).repeat(tlevel);
 
-function titlePad(padMax = 16) {
-    ltitlePadding = padMax;
-}
-
-function tabsize(size = 4) {
-    ltabsize = size;
-}
-
-function clock(x) {
+function clock(x=null) {
     if (x) {
         const elapsed = process.hrtime(x);
-        return Math.floor(elapsed[0] * 1000 + elapsed[1] * 1e-6);
+        return elapsed[0] * 1000 + elapsed[1] * 1e-6;
     }
 
     return process.hrtime();
 }
 
-function caller() {
+function caller(stackpos = 0) {
     var st = new Error().stack;
-    st = st.split(/\r?\n/)[3];
+    st = st.split(/\r?\n/)[stackpos]; // stack unwind
     st = st.substr(st.indexOf("at ") + 3);
-    return st;
+    return ellide(st);
 }
 
-function results() {
-    if (!lmultiple || (lmultiple && lfinal)) {
-        if (!lrun) {
-            printf("\nNO TESTS RUN (%d/%d)\n\n", ltests, ltests);
+const wait = (fn) => async () => new Promise(fn);
+
+class Stack extends Array {
+    top = () => this.length ? this[this.length-1] : null;
+}
+
+const TEST_FLOAT_TOLERANCE = 0.001;
+var stack = new Stack;
+var beforeStack = new Stack;
+var ctest = null;
+var tablevel = 0;
+var titlePadding = 40;
+var hasrun = false;
+var counts = [ 0, 0, 0 ];
+
+function beforeList() {
+    return beforeStack.top() ?? [];
+}
+
+class Test {
+    constructor(title, cb=()=>{}) {
+        this._title = "";
+        this.title = title;
+        this.fn = cb;
+        this.before = [];
+        this.list = [];
+        this.counts = [ 0, 0, 0 ];
+    }
+
+    setTitle(title) {
+        this._title = title;
+    }
+
+    push(test) {
+        this.list.push(test);
+    }
+
+    beforeEach(fn) {
+        this.before.push(fn);
+    }
+
+    async run() {
+        stack.push(this);
+        const cpad = titlePadding - (TABSIZE*tablevel);
+        const tab = makeTab(tablevel++);
+
+        if (this._title.length) {
+            printf(`\n${tab}%-${cpad}s\n`, this._title);
         }
-        else if (lfails === 0) {
-            printf("\nALL TESTS PASSED (%d/%d)\n\n", ltests, ltests);
+
+        printf(`${tab}%-${cpad}s\n`, `${Color.Yellow(this.title)}`);
+        await this.fn();
+        if (this.before.length)
+            beforeStack.push(this.before);
+
+        for(var t of this.list) {
+            for(var b of beforeList()) {
+                await b();
+            }
+
+            await t.run();
+
+            for(var i=0; i < this.counts.length; i++) {
+                this.counts[i] += t.counts[i];
+            }
         }
-        else {
-            printf("\nSOME TESTS FAILED (%d/%d)\n\n", ltests - lfails, ltests);
+
+        if (this.before.length)
+            beforeStack.pop();
+
+        tablevel--;
+        stack.pop();
+
+        return this.counts;
+    }
+
+    pass(didpass, msg) {
+        const idx = didpass | 0;
+        this.counts[idx]++;
+        this.counts[2]++;
+        if (!didpass) {
+            printf("\t%s %s %s\n", Color.Yellow(caller(5)), Color.Red("Failed"), msg);
+        }
+
+        return didpass;
+    }
+}
+
+function collectRun(name, cb=()=>{}) {
+    var t = new Test(name, cb);
+    stack.push(t);
+}
+
+function finalizeRun(name, cb=()=>{}) {
+    var t = new Test(name, cb);
+    stack.top().push(t);
+}
+
+var _run = collectRun;
+const run = (...args) => _run(...args);
+const group = (...args) => _run(...args);
+
+async function finalize() {
+    if (!hasrun) {
+        var rstack = stack;
+        stack = new Stack;
+        _run = finalizeRun;
+        hasrun = true;
+
+        for(var t of rstack) {
+            await t.run();
+
+            for(var i=0; i < counts.length; i++) {
+                counts[i] += t.counts[i];
+            }
         }
     }
-    return lfails !== 0;
-}
 
-function final() {
-    lfinal=true;
     return results();
 }
 
-function setfinalization() {
-    lmultiple=true;
-    lfinal=false;
-}
+function results() {
+    const cpad = titlePadding - (TABSIZE*tablevel);
+    const [ failed, passed, total ] = counts;
 
-function bench(cb) {
-    lastResult = false;
-    let start = clock();
-    cb();
-    return clock(start);
-}
-
-function title(msg) {
-    printf(`%-${ltitlePadding}s\n`, `${makeTab(tablevel)}${msg}`);
-}
-
-function group(name, cb) {
-    printf("%s\n", makeTab(tablevel++) + name);
-    cb();
-    printf("\n");
-    if (lpreruncb !== null && lpreruncb.tablevel == tablevel) {
-        lpreruncb = null;
+    if (!hasrun) {
+        printf('\n%s\n\n', Color.Yellow("NO TESTS RUN"));
     }
-    tablevel--;
-}
-
-function beforeEach(cb) {
-    lpreruncb = cb;
-    lpreruncb.tablevel = tablevel;
-}
-
-function run(name, testfunc) {
-    lrun = true;
-
-    var tab = makeTab(tablevel);
-    var ts = ltests;
-    var fs = lfails;
-    printf(`%-${ltitlePadding}s`, tab + name);
-
-    if (typeof lpreruncb === 'function')
-        lpreruncb();
-
-    var timed = bench(testfunc);
-    printf(":: pass: %4d   fail: %4d   %4d ms\n", (ltests - ts) - (lfails - fs), lfails - fs, timed);
-
-    tab = tab + makeTab(1);
-    var failed = lfailures.length;
-    if (lfailures.length) {
-        printf("%sFailures:\n", tab);
-        tab = tab + makeTab(1);
-        for(var i=0, len=lfailures.length; i < len; i++) {
-            printf(`%s%s\n`, tab, lfailures[i]);
-        }
-        printf("\n");
-        lfailures = [];
+    else if (passed === total) {
+        printf(`\n%s (${Color.Green('%3d')} / ${Color.Yellow('%3d')})\n\n`, Color.Green("ALL TESTS PASSED"), passed, total);
     }
-    return failed;
-}
-
-function pass(passed, msg) {
-    ltests++;
-    if (!passed) {
-        lfails++;
-        lfailures.push(msg);
-        return false;
+    else {
+        printf(`\n%s (${Color.Red('%3d')} / ${Color.Yellow('%3d')})\n\n`,
+        Color.Red("SOME TESTS FAILED"), failed, total);
     }
 
-    return true;
+    return failed !== 0;
 }
 
-function ok(test) {
-    pass(test, caller() + ' error');
+function reset() {
+    stack = new Stack;
+    _run = collectRun;
+    hasrun = false;
+    counts = [ 0, 0, 0 ];
 }
 
-function equal(a, b) {
-    pass(a === b, caller() + ' (' + a + ' !== ' + b + ')');
-}
-
-function lequal(a, b) {
-    pass(a == b, caller() + ' (' + a + ' !== ' + b + ')');
-}
-
-function fequal(a, b) {
-    pass(Math.abs(a - b) <= LTEST_FLOAT_TOLERANCE, caller() + ' (' + a + ' != ' + b + ')');
-}
-
-function exists(obj) {
-    return pass(!(obj === (void 0) || typeof (obj) == 'undefined' || obj === null), caller() + " object doesn't exist");
-}
-
-function isArray(a) {
-    pass(!!a && a.constructor === Array, a.constructor + " isn't an Array");
-}
-
-function isNumber(a) {
-    pass(!isNaN(parseFloat(a)) && isFinite(a), serialize(a) + " isn't a number");
-}
-
-function notEqual(a, b) {
-    pass(a !== b, caller() + ' (' + a + ' === ' + b + ')');
-}
-
-function lnotEqual(a, b) {
-    pass(a != b, caller() + ' (' + a + ' === ' + b + ')');
-}
-
-function deepEqual(a, b) {
-    var sa = serialize(a);
-    var sb = serialize(b);
-    pass(sa === sb, sa + ' != ' + sb);
-}
-
-function wait(fn) {
-    return async () => await new Promise((res) => fn(res))
-}
+const title = (title) => stack.top().setTitle(title);
+const beforeEach = (fn) => stack.top().beforeEach(fn);
+const pass = (passed, msg) => stack.top().pass(passed, msg);
+const ok = (test) => pass(test, Color.Red('NOT OK'));
+const equal = (a, b) => pass(a === b, `(${a} !== ${b})`);
+const lequal = (a, b) => pass(a == b, `(${a} !== ${b})`);
+const fequal = (a, b) => pass(Math.abs(a - b) <= TEST_FLOAT_TOLERANCE, `(${a} != ${b})`);
+const exists = (obj) => pass(!(obj === (void 0) || typeof (obj) == 'undefined' || obj === null), `object doesn't exist`);
+const isArray = (a) => pass(!!a && a.constructor === Array, `${a.constructor}  isn't an Array`);
+const isNumber = (a) => pass(!isNaN(parseFloat(a)) && isFinite(a), `'${serialize(a)}' isn't a number`);
+const notEqual = (a, b) => pass(a !== b, `(${a} === ${b})`);
+const lnotEqual = (a, b) => pass(a != b, `(${a} === ${b})`);
+const deepEqual = (a, b) => {
+    const sa = serialize(a);
+    const sb = serialize(b);
+    pass(sa === sb, `${sa} != ${sb}`);
+};
 
 exports = module.exports = {
     printf,
     sprintf,
-    titlePad,
-    tabsize,
+    reset,
     title,
-    results,
+    group,
+    wait,
+    finalize,
+    beforeEach,
+
     run,
     ok,
     fequal,
@@ -266,10 +266,4 @@ exports = module.exports = {
     exists,
     isNumber,
     isArray,
-    group,
-    wait,
-    final,
-    setfinalization,
-    bench,
-    beforeEach
 };
