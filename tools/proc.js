@@ -317,6 +317,8 @@ class Parser {
             quiet: _quiet,
             newline: '\n',
             append: false,
+            target: 'browser',
+            includePaths: false,
         };
         Object.assign(this.config,
             Object.filter(config || {}, function(name, v) {
@@ -331,6 +333,12 @@ class Parser {
 
         if (config.append && Array.isArray(config.append)) {
             this.appendDoc = [ ...this.appendDoc, ...config.append ];
+        }
+
+        if (Array.isArray(config.includePaths)) {
+            for(var p of config.includePaths) {
+                this.addIncludeSearchPath(p);
+            }
         }
 
         var date = new Date();
@@ -1187,21 +1195,22 @@ class Parser {
 
         const start = this.ofs;
         this.line = this.line.splice(start, 'export'.length+1, '');
-
-        const id = this.getIdent(this.ofs);
-        switch(id) {
-            case 'let':
-            case 'var':
-            case 'const':
-            case 'class':
-            case 'function':
-                const name = this.getIdent(this.ofs+1);
-                this.ofs = start;
-                this.addexport(name);
-                return 1;
-            default:
-                error(`export: Expected identifier at line ${this.loc()}`);
-                return 0;
+        if (this.config.target == 'node') {
+            const id = this.getIdent(this.ofs);
+            switch(id) {
+                case 'let':
+                case 'var':
+                case 'const':
+                case 'class':
+                case 'function':
+                    const name = this.getIdent(this.ofs+1);
+                    this.ofs = start;
+                    this.addexport(name);
+                    return 1;
+                default:
+                    error(`export: Expected identifier at line ${this.loc()}`);
+                    return 0;
+            }
         }
     }
 

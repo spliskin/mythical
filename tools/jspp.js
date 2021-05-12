@@ -59,15 +59,17 @@ const defaultConfig = {
     basename: false,
     overwrite: false,
     print: false,
-    quiet: 0,
+    quiet: 5,
     maxEmptyLines: 1,
     stopOnError: true,
     stripComments: true,
     newline: '\n',
     excludePaths: {},
+    includePaths: false,
     defines: {},
     isCommand: true,
     append: [],
+    target: 'browser',
 };
 
 var config = {};
@@ -156,6 +158,13 @@ var list = cmdparse({
         'f': () => config.overwrite = true,
         'x': () => config.stopOnError = true,
         's': () => config.stripComments = true,
+        'I': (...args) => config.includePaths = Array.from(args),
+        'target': (platform) => {
+            if (['browser','node'].indexOf(platform) == -1) {
+                return fatal(`Unknown platform '${platform}'`);
+            }
+            config.target = platform;
+        },
         'append': (line) => {
             line = line.trim();
             if (line.length < 1) return
@@ -185,6 +194,7 @@ var list = cmdparse({
         },
     },
     delayed: ['o', 'e'],
+    listed: ['I'],
 }, args);
 
 for(var fname of list) {
@@ -279,6 +289,7 @@ function jspp(args = DEFAULTARGS) {
         ret = preproc(args, ['-']);
     } catch(err) {
         ret = -1;
+        fatal(err.message);
     }
 
     preproc.isCommand = oldIsCommand;

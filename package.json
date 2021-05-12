@@ -24,7 +24,8 @@
     "altbuild": "node tools/jsp.js -f -s -q 1 -strip -o alt.js alt/browser.js",
     "altminify": "esbuild alt.js --outfile=alt.min.js --sourcemap --target=es5 --platform=browser --minify",
     "altbuildmin": "npm run altbuild && npm run altminify",
-    "alttest": "node tools/test/minc 'alt/test/*.test.js'"
+    "alttest": "node tools/test/minc '*/alt/alttests/*/test-*.js'",
+    "clean": "rm -rf ./tmp && rm -f out.js"
   },
   "devDependencies": {
     "esbuild": "^0.11.20",

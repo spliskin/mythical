@@ -271,8 +271,10 @@ function cmdparse(opt={}, args = []) {
             switches: ['--','-','/'],
             commands: false,
             delayed: false,
+            listed: false,
         }, opt),
-        list=[];
+        list=[],
+        listed=[],
         delayed={
             _gen: [],
         };
@@ -292,6 +294,14 @@ function cmdparse(opt={}, args = []) {
         return delayed.hasOwnProperty(cmd);
     }
 
+    this.listCommand = function(cmd) {
+        listed[cmd] = [];
+    };
+
+    this.isList = function(cmd) {
+        return cmd in listed;
+    }
+
     this.isCommand = function(cmd) {
         return (options.commands.hasOwnProperty(cmd) && typeof options.commands[cmd] === 'function');
     }
@@ -300,6 +310,13 @@ function cmdparse(opt={}, args = []) {
         for(var i of options.delayed) {
             if (this.isCommand(i))
                 this.delayCommand(i);
+        }
+    }
+
+    if (Array.isArray(options.listed)) {
+        for(var i of options.listed) {
+            if (this.isCommand(i))
+                this.listCommand(i);
         }
     }
 
@@ -334,11 +351,21 @@ function cmdparse(opt={}, args = []) {
                 if (options.commands[k].length) {
                     if (this.isDelayed(k)) {
                         delayed[k] = args.slice(i+1, i+1+options.commands[k].length);
-                    } else {
+                    }
+                    else {
                         options.commands[k].apply(null, args.slice(i+1, i+1+options.commands[k].length));
                     }
                     i += options.commands[k].length;
-                } else {
+                }
+                else if (this.isList(k)) {
+                    // search for next switch here
+                    // collect all entries from i to switch pos - 1
+                    var nextsw = args.findIndex((arg, idx) => idx > i && options.switches.find(s => arg.startsWith(s)) || false, i+1);
+                    var l = args.slice(i+1, nextsw);
+                    options.commands[k].apply(null, l);
+                    i = nextsw-1;
+                }
+                else {
                     options.commands[k]();
                 }
             } else {

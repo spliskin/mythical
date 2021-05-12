@@ -4,7 +4,7 @@ const test = require("./test/minctest");
 const { fileexists, getextension, direxists, mkdir } = require("./io.js");
 const spawnSync = require('child_process').spawnSync;
 
-const DEFAULTARGS = ['-strip','-s','-f','-q'];
+const DEFAULTARGS = ['-strip','-s','-f','-q','0'];
 function jspp(cmd, ...args) {
     var result = spawnSync('tools/jsp.js', args, { stdio: 'inherit' });
     return result.status === null ? result.signal : result.status;

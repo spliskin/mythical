@@ -52,7 +52,17 @@ function scanPath(searchPath, pattern = "*") {
 }
 
 function resolvePathPattern(str) {
+    if (str.startsWith("'") && str.endsWith("'")) {
+        str = str.substring(1, str.length-1);
+    }
     var a = path.normalize(str).split(path.sep);
+    var idx = a.indexOf('*');
+    if (idx !== -1) {
+        return {
+            path: path.resolve(path.join.apply(null, a.slice(0, idx))).replace("'", ''),
+            pattern: path.join.apply(null, a.slice(idx)).replace("'", '')
+        };
+    }
     return {
         path: path.resolve(path.join.apply(null, a.slice(0, -1))).replace("'", ''),
         pattern: a.slice(-1).shift().replace("'", '')

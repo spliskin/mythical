@@ -52,8 +52,10 @@ var tablevel = 0;
 var lfailures = [];
 var lmultiple=false;
 var lfinal = false;
+var lrun = false;
+var lpreruncb = false;
 
-function sprintf(str, arr) {
+function format(str, arr) {
     var i = -1;
     function callback(exp, p0, p1, p2, p3, p4) {
         if (exp == '%%') return '%';
@@ -80,8 +82,9 @@ function sprintf(str, arr) {
     return str.replace(regex, callback);
 }
 
-const stdlog = (window && console && console.log) ? console.log : process.stdout.write.bind(process.stdout);
-const printf = (fmt, ...args) => stdlog(sprintf(fmt, ...args));
+const stdlog = (typeof window !== 'undefined' && typeof console !== 'undefined' && console.log) ? console.log : process.stdout.write.bind(process.stdout);
+const sprintf = (fmt, ...args) => format(fmt, arg);
+const printf = (fmt, ...args) => stdlog(format(fmt, args));
 const serialize = (a) => JSON.stringify(a);
 const makeTab = (tlevel = 0) => " ".repeat(ltabsize).repeat(tlevel);
 
@@ -111,9 +114,13 @@ function caller() {
 
 function results() {
     if (!lmultiple || (lmultiple && lfinal)) {
-        if (lfails === 0) {
+        if (!lrun) {
+            printf("\nNO TESTS RUN (%d/%d)\n\n", ltests, ltests);
+        }
+        else if (lfails === 0) {
             printf("\nALL TESTS PASSED (%d/%d)\n\n", ltests, ltests);
-        } else {
+        }
+        else {
             printf("\nSOME TESTS FAILED (%d/%d)\n\n", ltests - lfails, ltests);
         }
     }
@@ -131,6 +138,7 @@ function setfinalization() {
 }
 
 function bench(cb) {
+    lastResult = false;
     let start = clock();
     cb();
     return clock(start);
@@ -140,15 +148,37 @@ function title(msg) {
     printf(`%-${ltitlePadding}s\n`, `${makeTab(tablevel)}${msg}`);
 }
 
+function group(name, cb) {
+    printf("%s\n", makeTab(tablevel++) + name);
+    cb();
+    printf("\n");
+    if (lpreruncb !== null && lpreruncb.tablevel == tablevel) {
+        lpreruncb = null;
+    }
+    tablevel--;
+}
+
+function beforeEach(cb) {
+    lpreruncb = cb;
+    lpreruncb.tablevel = tablevel;
+}
+
 function run(name, testfunc) {
+    lrun = true;
+
     var tab = makeTab(tablevel);
     var ts = ltests;
     var fs = lfails;
     printf(`%-${ltitlePadding}s`, tab + name);
+
+    if (typeof lpreruncb === 'function')
+        lpreruncb();
+
     var timed = bench(testfunc);
     printf(":: pass: %4d   fail: %4d   %4d ms\n", (ltests - ts) - (lfails - fs), lfails - fs, timed);
 
     tab = tab + makeTab(1);
+    var failed = lfailures.length;
     if (lfailures.length) {
         printf("%sFailures:\n", tab);
         tab = tab + makeTab(1);
@@ -158,13 +188,7 @@ function run(name, testfunc) {
         printf("\n");
         lfailures = [];
     }
-}
-
-function group(name, cb) {
-    printf("%s\n", makeTab(tablevel++) + name);
-    cb();
-    printf("\n");
-    tablevel--;
+    return failed;
 }
 
 function pass(passed, msg) {
@@ -183,7 +207,11 @@ function ok(test) {
 }
 
 function equal(a, b) {
-    pass(a === b, caller() + ' (' + a + ' != ' + b + ')');
+    pass(a === b, caller() + ' (' + a + ' !== ' + b + ')');
+}
+
+function lequal(a, b) {
+    pass(a == b, caller() + ' (' + a + ' !== ' + b + ')');
 }
 
 function fequal(a, b) {
@@ -206,10 +234,18 @@ function notEqual(a, b) {
     pass(a !== b, caller() + ' (' + a + ' === ' + b + ')');
 }
 
+function lnotEqual(a, b) {
+    pass(a != b, caller() + ' (' + a + ' === ' + b + ')');
+}
+
 function deepEqual(a, b) {
     var sa = serialize(a);
     var sb = serialize(b);
     pass(sa === sb, sa + ' != ' + sb);
+}
+
+function wait(fn) {
+    return async () => await new Promise((res) => fn(res))
 }
 
 exports = module.exports = {
@@ -224,12 +260,16 @@ exports = module.exports = {
     fequal,
     equal,     // equal is a STRICT comparison now as well
     notEqual,  // notEqual is a STRICT comparison
+    lequal,    // relaxed equality comparison
+    lnotEqual,
     deepEqual,
     exists,
     isNumber,
     isArray,
     group,
+    wait,
     final,
     setfinalization,
-    bench
+    bench,
+    beforeEach
 };
