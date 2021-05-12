@@ -1,9 +1,9 @@
 #pragma once
 #include "querystring/build.js"
-#include "util/common.js"
+#include "util.js"
 
 // Returns `path` from `template` + `params`
-function buildPathname(template, params) {
+export function buildPathname(template, params) {
 	if ((/:([^\/\.-]+)(\.{3})?:/).test(template)) {
 		throw new SyntaxError("Template parameter names must be separated by either a '/', '-', or '.'.")
 	}

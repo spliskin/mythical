@@ -1,7 +1,7 @@
 #pragma once
 #include "vnode.js"
 #include "hyperscriptVnode.js"
-#include "util/common.js"
+#include "util.js"
 
 
 var selectorParser = /(?:(^|#|\.)([^#\.\[\]]+))|(\[(.+?)(?:\s*=\s*("|'|)((?:\\["'\]]|.)*?)\5)?\])/g

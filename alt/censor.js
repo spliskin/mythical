@@ -1,5 +1,5 @@
 #pragma once
-#include "common.js"
+#include "util.js"
 
 // Note: this is mildly perf-sensitive.
 //

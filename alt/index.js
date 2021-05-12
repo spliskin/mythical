@@ -13,7 +13,7 @@
 #include "pathname/parse.js"
 #include "pathname/build.js"
 #include "render/vnode.js"
-#include "util/censor.js"
+#include "censor.js"
 
 #define defnull(o) typeof o !== "undefined" ? o : null
 var _window = defnull(window)

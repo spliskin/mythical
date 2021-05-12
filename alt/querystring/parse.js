@@ -1,6 +1,6 @@
 #pragma once
 
-function parseQueryString(string) {
+export function parseQueryString(string) {
 	if (string === "" || string == null) return {}
 	if (string.charAt(0) === "?") string = string.slice(1)
 

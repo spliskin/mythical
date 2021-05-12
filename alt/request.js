@@ -1,6 +1,6 @@
 #pragma once
 #include "pathname/build.js"
-#include "util/common.js"
+#include "util.js"
 
 function _request($window, Promise, oncompletion) {
 	var callbackCount = 0

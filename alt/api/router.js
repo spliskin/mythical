@@ -4,8 +4,8 @@
 #include "pathname/build.js"
 #include "pathname/parse.js"
 #include "pathname/compileTemplate.js"
-#include "util/common.js"
-#include "util/censor.js"
+#include "util.js"
+#include "censor.js"
 
 var _router = (function() {
 var sentinel = {}

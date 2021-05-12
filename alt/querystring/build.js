@@ -1,6 +1,6 @@
 #pragma once
 
-function buildQueryString(object) {
+export function buildQueryString(object) {
 	if (Object.prototype.toString.call(object) !== "[object Object]") return ""
 
 	var args = []
